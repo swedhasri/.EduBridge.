@@ -88,7 +88,7 @@ const CourseGameMode = () => {
         if (!unlockedLevels.includes(idx)) return;
         setCurrentLevelIdx(idx);
         setCurrentChallengeIdx(0);
-        setLevelScore(0);
+        setLevelScore(0); // Reset score for new level
         setGameState('playing');
         resetChallenge(0, idx);
     };
@@ -119,7 +119,13 @@ const CourseGameMode = () => {
             if (timeLeft > challenge.timeLimit * 0.5) earnedXP += 5;
 
             setUserXP(prev => prev + earnedXP);
-            setLevelScore(prev => prev + 1);
+            setLevelScore(prev => {
+                const newScore = prev + 1;
+                console.log(`Correct answer! Score increased from ${prev} to ${newScore}`);
+                return newScore;
+            });
+        } else {
+            console.log(`Wrong answer! Score remains: ${levelScore}`);
         }
 
         setTimeout(() => {
@@ -145,6 +151,9 @@ const CourseGameMode = () => {
     const completeLevel = () => {
         const level = course.gameLevels[currentLevelIdx];
         const totalChallenges = level.challenges.length;
+
+        // Debug logging
+        console.log(`Level Score: ${levelScore}, Total Challenges: ${totalChallenges}, Required: ${totalChallenges / 2}`);
 
         // Check if passed (e.g., 50% correct)
         if (levelScore >= totalChallenges / 2) {
