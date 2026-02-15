@@ -113,17 +113,16 @@ const CourseGameMode = () => {
         setIsCorrect(correct);
         setShowFeedback(true);
 
+        let newScore = levelScore;
         if (correct) {
             let earnedXP = challenge.xpReward;
             // Speed bonus
             if (timeLeft > challenge.timeLimit * 0.5) earnedXP += 5;
 
             setUserXP(prev => prev + earnedXP);
-            setLevelScore(prev => {
-                const newScore = prev + 1;
-                console.log(`Correct answer! Score increased from ${prev} to ${newScore}`);
-                return newScore;
-            });
+            newScore = levelScore + 1;
+            setLevelScore(newScore);
+            console.log(`Correct answer! Score increased from ${levelScore} to ${newScore}`);
         } else {
             console.log(`Wrong answer! Score remains: ${levelScore}`);
         }
@@ -133,30 +132,32 @@ const CourseGameMode = () => {
                 setCurrentChallengeIdx(prev => prev + 1);
                 resetChallenge(currentChallengeIdx + 1, currentLevelIdx);
             } else {
-                completeLevel();
+                completeLevel(newScore);
             }
         }, 2000);
     };
 
     const handleGameComplete = (earnedXP) => {
         setUserXP(prev => prev + earnedXP);
-        setLevelScore(course.gameLevels[currentLevelIdx].challenges.length); // Max score
-        completeLevel();
+        const maxScore = course.gameLevels[currentLevelIdx].challenges.length;
+        setLevelScore(maxScore);
+        completeLevel(maxScore);
     };
 
     const handleGameFail = () => {
         setGameState('game-over');
     };
 
-    const completeLevel = () => {
+    const completeLevel = (finalScore) => {
         const level = course.gameLevels[currentLevelIdx];
         const totalChallenges = level.challenges.length;
+        const scoreToUse = finalScore !== undefined ? finalScore : levelScore;
 
         // Debug logging
-        console.log(`Level Score: ${levelScore}, Total Challenges: ${totalChallenges}, Required: ${totalChallenges / 2}`);
+        console.log(`Level Score: ${scoreToUse}, Total Challenges: ${totalChallenges}, Required: ${totalChallenges / 2}`);
 
         // Check if passed (e.g., 50% correct)
-        if (levelScore >= totalChallenges / 2) {
+        if (scoreToUse >= totalChallenges / 2) {
             // Badge awarding
             if (level.badge && !earnedBadges.find(b => b.name === level.badge.name)) {
                 setEarnedBadges(prev => [...prev, level.badge]);
