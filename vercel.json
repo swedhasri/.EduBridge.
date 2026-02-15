@@ -20,10 +20,10 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/client/dist/$1"
+      "dest": "/client/dist/index.html"
     }
   ],
   "installCommand": "npm install",
-  "buildCommand": "npm run build:client && npm run build:server",
+  "buildCommand": "npm run build:client",
   "outputDirectory": "client/dist"
 }
