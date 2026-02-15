@@ -1,0 +1,13 @@
+{
+    "name": "edubridge-root",
+    "version": "1.0.0",
+    "description": "Unified entry point for EDUbridge Hackathon",
+    "scripts": {
+        "install:all": "npm install && npm install --prefix client && npm install --prefix server",
+        "dev": "concurrently \"npm run server --prefix server\" \"npm run dev --prefix client\"",
+        "start": "npm run dev"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.2"
+    }
+}

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Let's Play - YouTube Educational Game</title>
+    <style>
+        /* CSS: This makes our website look beautiful and student-friendly */
+        :root {
+            --primary-color: #4f46e5; /* Indigo */
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            margin: 0;
+        }
+
+        .game-container {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #000;
+            margin-bottom: 25px;
+        }
+
+        /* The YouTube iframe will be placed here by Javascript */
+        #player {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background-color: #4338ca;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .info-box {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #eff6ff;
+            border-left: 5px solid var(--primary-color);
+            text-align: left;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>🎮 Let's Play: Video Challenge</h1>
+        <p>Watch the specific tutorial segment and press the buttons to control the video!</p>
+
+        <!-- Video Area -->
+        <div class="video-wrapper">
+            <!-- IMPORTANT: We use a div with id="player". The YouTube API will replace this with an iframe. -->
+            <div id="player"></div>
+        </div>
+
+        <!-- Game Controls -->
+        <div class="controls">
+            <button onclick="playVideo()">▶️ Play</button>
+            <button onclick="pauseVideo()">⏸️ Pause</button>
+            <button onclick="restartVideo()">🔄 Restart Segment</button>
+        </div>
+
+        <!-- Student Explanation -->
+        <div class="info-box">
+            <h3>How it works (for First-Year Students):</h3>
+            <ul>
+                <li><strong>YouTube API:</strong> We load a special script from Google that lets us control the video with code.</li>
+                <li><strong>Start & End Times:</strong> We told the code to start at 30 seconds and end at 90 seconds.</li>
+                <li><strong>Iframe vs Div:</strong> We use a <code>div</code> in HTML, and Javascript turns it into a YouTube player automatically!</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT: The logic of the game -->
+    <!-- FIX 1: Load the YouTube IFrame API script -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+        // FIX 2: Variables to store our player and the segment times
+        let player;
+        const startTime = 30; // Seconds
+        const endTime = 90;   // Seconds
+
+        // FIX 3: This function runs automatically once the YouTube API is ready
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '360',
+                width: '640',
+                videoId: 'UB1O30fR-EE', // Replace with any YouTube Video ID
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,      // Hide standard YouTube controls for a cleaner "Game" feel
+                    'rel': 0,
+                    'showinfo': 0,
+                    'modestbranding': 1,
+                    'start': startTime, // Start time in seconds
+                    'end': endTime      // End time in seconds
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        // FIX 4: Function to handle video state changes (like looping the segment)
+        function onPlayerStateChange(event) {
+            // If the video ends (State 0), we can automatically restart or pause
+            if (event.data === YT.PlayerState.ENDED) {
+                // For a game, maybe we want to show a "Well Done!" message?
+                alert("Segment Finished! Click Restart to watch again.");
+            }
+        }
+
+        // CONTROL FUNCTIONS: These connect our HTML buttons to the Video Player
+        function playVideo() {
+            player.playVideo();
+        }
+
+        function pauseVideo() {
+            player.pauseVideo();
+        }
+
+        function restartVideo() {
+            // Seek back to our start time and play
+            player.seekTo(startTime, true);
+            player.playVideo();
+        }
+    </script>
+</body>
+</html>
